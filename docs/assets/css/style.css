@@ -1,0 +1,38 @@
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: auto;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 40px;
+}
+
+.settings {
+    z-index: 1;
+    margin-right: 5px;
+    margin-top: 5px;
+    border: solid 3px lightgray;
+    border-radius: 8px;
+    height: max-content;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+i {
+    margin: 5px;
+    cursor: pointer;
+}
+
+i:hover {
+    color: lightblue;
+}
+
+span {
+    position: fixed;
+    text-align: center;
+    user-select: none;
+    margin: 0;
+    border: solid 1px red;
+}
