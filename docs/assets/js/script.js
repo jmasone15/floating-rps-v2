@@ -3,6 +3,7 @@ const addBtnEl = document.getElementById("add");
 const colorModeBtnEl = document.getElementById("color-mode");
 const settingsBoxEl = document.querySelector(".settings");
 const addEmojiEls = document.getElementsByClassName("emoji");
+const fullScreenEl = document.getElementById("fullscreen");
 const emojiSizes = { x: 55, y: 53 };
 const windowMax = {
     x: window.innerWidth - emojiSizes.x,
@@ -11,6 +12,7 @@ const windowMax = {
 let darkMode = localStorage.getItem("color-mode") === "true";
 let elementArray = [];
 let emojis = ["🪨", "📄", "✂️"];
+let fullscreen = false;
 class FloatingElement {
     id;
     htmlElement;
@@ -82,6 +84,34 @@ class FloatingElement {
                         this.flipDirection(false);
                         elementArray[i].flipDirection(false);
                     }
+                    const emojiIndex = emojis.indexOf(this.emoji);
+                    const otherEmojiIndex = emojis.indexOf(elementArray[i].emoji);
+                    switch (emojiIndex) {
+                        case 0:
+                            if (otherEmojiIndex === 1) {
+                                this.updateEmoji(elementArray[i].emoji);
+                            }
+                            else if (otherEmojiIndex === 2) {
+                                elementArray[i].updateEmoji(this.emoji);
+                            }
+                            break;
+                        case 1:
+                            if (otherEmojiIndex === 2) {
+                                this.updateEmoji(elementArray[i].emoji);
+                            }
+                            else if (otherEmojiIndex === 0) {
+                                elementArray[i].updateEmoji(this.emoji);
+                            }
+                            break;
+                        default:
+                            if (otherEmojiIndex === 0) {
+                                this.updateEmoji(elementArray[i].emoji);
+                            }
+                            else if (otherEmojiIndex === 1) {
+                                elementArray[i].updateEmoji(this.emoji);
+                            }
+                            break;
+                    }
                     this.moveElement();
                     elementArray[i].moveElement();
                     return;
@@ -93,10 +123,14 @@ class FloatingElement {
         const indexString = isHorizontal ? "x" : "y";
         this.increments[indexString] = this.increments[indexString] * -1;
     }
+    updateEmoji(newEmoji) {
+        this.emoji = newEmoji;
+        this.htmlElement.innerText = newEmoji;
+    }
 }
 const toggleColorMode = () => {
     localStorage.setItem("color-mode", darkMode.toString());
-    document.body.style.backgroundColor = darkMode ? "#0a0e12" : "white";
+    document.body.setAttribute("class", darkMode ? "dark" : "light");
     settingsBoxEl.style.color = darkMode ? "white" : "black";
     colorModeBtnEl.setAttribute("class", `fa-solid fa-${darkMode ? "sun" : "moon"}`);
 };
@@ -128,3 +162,18 @@ colorModeBtnEl.addEventListener("click", () => {
     darkMode = !darkMode;
     return toggleColorMode();
 });
+fullScreenEl.addEventListener("click", () => {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+        fullScreenEl.setAttribute("class", "fa-solid fa-expand");
+        fullScreenEl.setAttribute("title", "Enter Fullscreen");
+    }
+    else {
+        document.body.requestFullscreen();
+        fullScreenEl.setAttribute("class", "fa-solid fa-minimize");
+        fullScreenEl.setAttribute("title", "Exit Fullscreen");
+    }
+});
+if (!document.fullscreenEnabled) {
+    fullScreenEl.style.display = "none";
+}
