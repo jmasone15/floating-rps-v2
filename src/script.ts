@@ -4,6 +4,10 @@ interface Coordinates {
     y: number;
 }
 
+interface indexedCoordinates extends Coordinates {
+    index: number;
+}
+
 // HTML Elements
 const addBtnEl = document.getElementById("add") as HTMLElement;
 const colorModeBtnEl = document.getElementById("color-mode") as HTMLElement;
@@ -30,9 +34,8 @@ class FloatingElement {
     constructor(id: number, emoji: string) {
         this.id = id;
         this.htmlElement = document.createElement("span");
-        // Make Coordinates and Increments randomized
-        this.coordinates = { x: 0, y: 0 };
-        this.increments = { x: 1, y: 1 };
+        this.coordinates = { x: randomNumber(0, windowMax.x), y: randomNumber(0, windowMax.y) };
+        this.increments = { x: coinFlip(-1, 1), y: coinFlip(-1, 1) };
         this.emoji = emoji;
         this.speed = 10;
     }
@@ -58,14 +61,27 @@ class FloatingElement {
     }
 
     movementInterval() {
+        let wallBumped = false;
+
         // Wall Bumps
         if (this.wallBump(true)) {
             this.flipDirection(true);
+            wallBumped = true;
         }
         if (this.wallBump(false)) {
             this.flipDirection(false);
+            wallBumped = true;
         }
 
+        // Shape Bumps
+        if (!wallBumped) {
+            this.shapeBump();
+        }
+
+        return this.moveElement();
+    }
+
+    moveElement() {
         this.coordinates = {
             x: this.coordinates.x + this.increments.x,
             y: this.coordinates.y + this.increments.y
@@ -77,6 +93,41 @@ class FloatingElement {
         const indexString = isHorizontal ? "x" : "y";
         const newCoordinate = this.coordinates[indexString] + this.increments[indexString];
         return newCoordinate > windowMax[indexString] || newCoordinate < 0;
+    }
+
+    shapeBump() {
+        const { left, right, top, bottom } = this.htmlElement.getBoundingClientRect();
+
+        for (let i = 0; i < elementArray.length; i++) {
+            if (this.id !== elementArray[i].id) {
+                const elementCoords = elementArray[i].htmlElement.getBoundingClientRect();
+
+                if (
+                    comparePositions([left, right], [elementCoords.left, elementCoords.right]) &&
+                    comparePositions([top, bottom], [elementCoords.top, elementCoords.bottom])
+                ) {
+                    const horizontalBump =
+                        Math.abs(left - elementCoords.right) < 2 ||
+                        Math.abs(right - elementCoords.left) < 2;
+                    const verticalBump =
+                        Math.abs(top - elementCoords.bottom) < 2 ||
+                        Math.abs(bottom - elementCoords.top) < 2;
+
+                    if (horizontalBump) {
+                        this.flipDirection(true);
+                        elementArray[i].flipDirection(true);
+                    } else if (verticalBump) {
+                        this.flipDirection(false);
+                        elementArray[i].flipDirection(false);
+                    }
+
+                    this.moveElement();
+                    elementArray[i].moveElement();
+
+                    return;
+                }
+            }
+        }
     }
 
     flipDirection(isHorizontal: boolean) {
@@ -92,9 +143,36 @@ const toggleColorMode = () => {
     settingsBoxEl.style.color = darkMode ? "white" : "black";
     colorModeBtnEl.setAttribute("class", `fa-solid fa-${darkMode ? "sun" : "moon"}`);
 };
+const comparePositions = (shapeSidesOne: number[], shapeSidesTwo: number[]) => {
+    // This function runs to compare two shapes to see if they are touching either horizontally or vertically.
+    // The first step is to figure out which shape is the closest to the starting point of 0,0 on the screen.
+    // The next step is determining if the opposite side of the closest shape is touching the opposing side of the other shape.
+
+    let leftTopShape, rightBottomShape;
+    if (shapeSidesOne[0] < shapeSidesTwo[0]) {
+        leftTopShape = shapeSidesOne;
+        rightBottomShape = shapeSidesTwo;
+    } else {
+        leftTopShape = shapeSidesTwo;
+        rightBottomShape = shapeSidesOne;
+    }
+
+    return leftTopShape[1] > rightBottomShape[0] || leftTopShape[0] === rightBottomShape[0];
+};
+const randomNumber = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+};
+const coinFlip = (a: any, b: any) => {
+    return randomNumber(1, 10) > 5 ? a : b;
+};
 
 // Event Listeners
 addBtnEl.addEventListener("click", () => {
+    if (elementArray.length > 1) {
+        console.log("test");
+
+        elementArray[0].shapeBump();
+    }
     // Update to allow user to select which emoji(s) and the quantity they want to add.
     return new FloatingElement(elementArray.length, "🪨").init();
 });
