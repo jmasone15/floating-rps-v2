@@ -3,6 +3,7 @@ const addBtnEl = document.getElementById("add");
 const colorModeBtnEl = document.getElementById("color-mode");
 const settingsBoxEl = document.querySelector(".settings");
 const emojiSizes = { x: 55, y: 53 };
+const windowMax = { x: window.innerWidth - emojiSizes.x, y: window.innerHeight - emojiSizes.y };
 let darkMode = localStorage.getItem("color-mode") === "true";
 let elementArray = [];
 class FloatingElement {
@@ -33,6 +34,11 @@ class FloatingElement {
     movementInterval() {
         this.coordinates = { x: this.coordinates.x + this.increments.x, y: this.coordinates.y + this.increments.y };
         return this.updateDOM();
+    }
+    wallBump(isHorizontal) {
+        const indexString = isHorizontal ? "x" : "y";
+        const newCoordinate = this.coordinates[indexString] + this.increments[indexString];
+        return newCoordinate > windowMax[indexString] || newCoordinate < 0;
     }
 }
 const toggleColorMode = () => {

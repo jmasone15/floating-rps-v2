@@ -11,6 +11,7 @@ const settingsBoxEl = document.querySelector(".settings") as HTMLElement;
 
 // Game Variables
 const emojiSizes: Coordinates = {x: 55, y: 53};
+const windowMax: Coordinates = {x: window.innerWidth - emojiSizes.x, y: window.innerHeight - emojiSizes.y};
 let darkMode = localStorage.getItem("color-mode") === "true";
 let elementArray: FloatingElement[] = [];
 
@@ -26,6 +27,7 @@ class FloatingElement {
     constructor(id: number, emoji: string) {
         this.id = id;
         this.htmlElement = document.createElement("span");
+        // Make Coordinates and Increments randomized
         this.coordinates = {x: 0, y: 0};
         this.increments = {x: 1, y: 1};
         this.emoji = emoji;
@@ -53,6 +55,13 @@ class FloatingElement {
         this.coordinates = {x: this.coordinates.x + this.increments.x, y: this.coordinates.y + this.increments.y}
         return this.updateDOM();
     }
+
+    wallBump(isHorizontal: boolean) {
+        const indexString = isHorizontal ? "x" : "y";
+        const newCoordinate = this.coordinates[indexString] + this.increments[indexString];
+
+        return newCoordinate > windowMax[indexString] || newCoordinate < 0;
+    }
 }
 
 
@@ -66,6 +75,7 @@ const toggleColorMode = () => {
 
 // Event Listeners
 addBtnEl.addEventListener("click", () => {
+    // Update to allow user to select which emoji(s) and the quantity they want to add.
     return new FloatingElement(elementArray.length, "🪨").init();
 });
 colorModeBtnEl.addEventListener("click", () => {
