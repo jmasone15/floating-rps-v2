@@ -12,7 +12,6 @@ const windowMax = {
 let darkMode = localStorage.getItem("color-mode") === "true";
 let elementArray = [];
 let emojis = ["🪨", "📄", "✂️"];
-let fullscreen = false;
 class FloatingElement {
     id;
     htmlElement;

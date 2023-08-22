@@ -23,7 +23,6 @@ const windowMax: Coordinates = {
 let darkMode = localStorage.getItem("color-mode") === "true";
 let elementArray: FloatingElement[] = [];
 let emojis: string[] = ["🪨", "📄", "✂️"];
-let fullscreen = false;
 
 // Element Class
 class FloatingElement {
