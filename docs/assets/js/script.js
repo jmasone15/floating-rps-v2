@@ -2,6 +2,7 @@
 const addBtnEl = document.getElementById("add");
 const colorModeBtnEl = document.getElementById("color-mode");
 const settingsBoxEl = document.querySelector(".settings");
+const addEmojiEls = document.getElementsByClassName("emoji");
 const emojiSizes = { x: 55, y: 53 };
 const windowMax = {
     x: window.innerWidth - emojiSizes.x,
@@ -9,6 +10,7 @@ const windowMax = {
 };
 let darkMode = localStorage.getItem("color-mode") === "true";
 let elementArray = [];
+let emojis = ["🪨", "📄", "✂️"];
 class FloatingElement {
     id;
     htmlElement;
@@ -116,13 +118,12 @@ const randomNumber = (min, max) => {
 const coinFlip = (a, b) => {
     return randomNumber(1, 10) > 5 ? a : b;
 };
-addBtnEl.addEventListener("click", () => {
-    if (elementArray.length > 1) {
-        console.log("test");
-        elementArray[0].shapeBump();
-    }
-    return new FloatingElement(elementArray.length, "🪨").init();
-});
+for (let i = 0; i < addEmojiEls.length; i++) {
+    const element = addEmojiEls[i];
+    element.addEventListener("click", () => {
+        return new FloatingElement(elementArray.length, element.innerText).init();
+    });
+}
 colorModeBtnEl.addEventListener("click", () => {
     darkMode = !darkMode;
     return toggleColorMode();

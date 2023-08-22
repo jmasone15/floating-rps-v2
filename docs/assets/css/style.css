@@ -20,7 +20,8 @@ body {
     text-align: center;
 }
 
-i {
+i,
+.emoji {
     margin: 5px;
     cursor: pointer;
 }

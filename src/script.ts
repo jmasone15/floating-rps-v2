@@ -3,7 +3,6 @@ interface Coordinates {
     x: number;
     y: number;
 }
-
 interface indexedCoordinates extends Coordinates {
     index: number;
 }
@@ -12,6 +11,7 @@ interface indexedCoordinates extends Coordinates {
 const addBtnEl = document.getElementById("add") as HTMLElement;
 const colorModeBtnEl = document.getElementById("color-mode") as HTMLElement;
 const settingsBoxEl = document.querySelector(".settings") as HTMLElement;
+const addEmojiEls = document.getElementsByClassName("emoji");
 
 // Game Variables
 const emojiSizes: Coordinates = { x: 55, y: 53 };
@@ -21,6 +21,7 @@ const windowMax: Coordinates = {
 };
 let darkMode = localStorage.getItem("color-mode") === "true";
 let elementArray: FloatingElement[] = [];
+let emojis: string[] = ["🪨", "📄", "✂️"];
 
 // Element Class
 class FloatingElement {
@@ -167,15 +168,13 @@ const coinFlip = (a: any, b: any) => {
 };
 
 // Event Listeners
-addBtnEl.addEventListener("click", () => {
-    if (elementArray.length > 1) {
-        console.log("test");
+for (let i = 0; i < addEmojiEls.length; i++) {
+    const element = addEmojiEls[i] as HTMLElement;
 
-        elementArray[0].shapeBump();
-    }
-    // Update to allow user to select which emoji(s) and the quantity they want to add.
-    return new FloatingElement(elementArray.length, "🪨").init();
-});
+    element.addEventListener("click", () => {
+        return new FloatingElement(elementArray.length, element.innerText).init();
+    });
+}
 colorModeBtnEl.addEventListener("click", () => {
     darkMode = !darkMode;
     return toggleColorMode();
