@@ -4,6 +4,12 @@ const colorModeBtnEl = document.getElementById("color-mode");
 const settingsBoxEl = document.querySelector(".settings");
 const addEmojiEls = document.getElementsByClassName("emoji");
 const fullScreenEl = document.getElementById("fullscreen");
+const modalEl = document.getElementById("modal");
+const battleBtnEl = document.getElementById("battle");
+const zenBtnEl = document.getElementById("zen");
+const menuEl = document.getElementById("menu");
+const battleMenuEl = document.getElementById("battle-menu");
+let gameMode = "";
 const emojiSizes = { x: 55, y: 53 };
 const windowMax = {
     x: window.innerWidth - emojiSizes.x,
@@ -151,6 +157,27 @@ const randomNumber = (min, max) => {
 const coinFlip = (a, b) => {
     return randomNumber(1, 10) > 5 ? a : b;
 };
+const menuSelect = (event) => {
+    event.preventDefault();
+    const element = event.target;
+    gameMode = element.innerText;
+    if (gameMode === "Zen Mode") {
+        hideShowEl(settingsBoxEl, true);
+        hideShowEl(modalEl, false);
+    }
+    else {
+        hideShowEl(menuEl, false);
+        hideShowEl(battleMenuEl, true);
+    }
+};
+const hideShowEl = (element, show) => {
+    if (show) {
+        element.classList.remove("d-none");
+    }
+    else {
+        element.classList.add("d-none");
+    }
+};
 for (let i = 0; i < addEmojiEls.length; i++) {
     const element = addEmojiEls[i];
     element.addEventListener("click", () => {
@@ -173,6 +200,9 @@ fullScreenEl.addEventListener("click", () => {
         fullScreenEl.setAttribute("title", "Exit Fullscreen");
     }
 });
+battleBtnEl.addEventListener("click", menuSelect);
+zenBtnEl.addEventListener("click", menuSelect);
 if (!document.fullscreenEnabled) {
     fullScreenEl.style.display = "none";
 }
+toggleColorMode();

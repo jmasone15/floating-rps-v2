@@ -11,12 +11,30 @@
 </head>
 
 <body>
-    <div class="settings">
+    <div class="settings d-none">
         <p class="emoji" title="Add Emoji">🪨</p>
         <p class="emoji" title="Add Emoji">📄</p>
         <p class="emoji" title="Add Emoji">✂️</p>
         <i id="color-mode" class="fa-solid fa-moon" title="Light/Dark Mode"></i>
         <i id="fullscreen" class="fa-solid fa-expand" title="Enter Fullscreen"></i>
+    </div>
+
+    <div id="modal">
+        <div class="modal-content">
+            <div id="menu">
+                <h3>Rock Paper Scissors</h3>
+                <button id="battle">Battle Mode</button>
+                <button id="zen">Zen Mode</button>
+            </div>
+            <div id="battle-menu" class="d-none">
+                <h3>Choose your player</h3>
+                <div style="display: flex;">
+                    <p class="emoji">🪨</p>
+                    <p class="emoji">📄</p>
+                    <p class="emoji">✂️</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="./assets/js/script.js"></script>

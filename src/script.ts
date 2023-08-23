@@ -13,8 +13,14 @@ const colorModeBtnEl = document.getElementById("color-mode") as HTMLElement;
 const settingsBoxEl = document.querySelector(".settings") as HTMLElement;
 const addEmojiEls = document.getElementsByClassName("emoji");
 const fullScreenEl = document.getElementById("fullscreen") as HTMLElement;
+const modalEl = document.getElementById("modal") as HTMLElement;
+const battleBtnEl = document.getElementById("battle") as HTMLElement;
+const zenBtnEl = document.getElementById("zen") as HTMLElement;
+const menuEl = document.getElementById("menu") as HTMLElement;
+const battleMenuEl = document.getElementById("battle-menu") as HTMLElement;
 
 // Game Variables
+let gameMode = "";
 const emojiSizes: Coordinates = { x: 55, y: 53 };
 const windowMax: Coordinates = {
     x: window.innerWidth - emojiSizes.x,
@@ -200,6 +206,27 @@ const randomNumber = (min: number, max: number) => {
 const coinFlip = (a: any, b: any) => {
     return randomNumber(1, 10) > 5 ? a : b;
 };
+const menuSelect = (event: Event) => {
+    event.preventDefault();
+    const element = event.target as HTMLElement;
+
+    gameMode = element.innerText;
+
+    if (gameMode === "Zen Mode") {
+        hideShowEl(settingsBoxEl, true);
+        hideShowEl(modalEl, false);
+    } else {
+        hideShowEl(menuEl, false);
+        hideShowEl(battleMenuEl, true);
+    }
+};
+const hideShowEl = (element: HTMLElement, show: boolean) => {
+    if (show) {
+        element.classList.remove("d-none");
+    } else {
+        element.classList.add("d-none");
+    }
+};
 
 // Event Listeners
 for (let i = 0; i < addEmojiEls.length; i++) {
@@ -224,7 +251,11 @@ fullScreenEl.addEventListener("click", () => {
         fullScreenEl.setAttribute("title", "Exit Fullscreen");
     }
 });
+battleBtnEl.addEventListener("click", menuSelect);
+zenBtnEl.addEventListener("click", menuSelect);
 
 if (!document.fullscreenEnabled) {
     fullScreenEl.style.display = "none";
 }
+
+toggleColorMode();
