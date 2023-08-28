@@ -20,18 +20,20 @@
     </div>
 
     <div id="modal">
-        <div class="modal-content">
+        <div id="countdown" class="d-none"></div>
+        <div id="modal-content">
             <div id="menu">
                 <h3>Rock Paper Scissors</h3>
                 <button id="battle">Battle Mode</button>
                 <button id="zen">Zen Mode</button>
             </div>
             <div id="battle-menu" class="d-none">
-                <h3>Choose your player</h3>
-                <div style="display: flex;">
-                    <p class="emoji">🪨</p>
-                    <p class="emoji">📄</p>
-                    <p class="emoji">✂️</p>
+                <h3>Battle Mode</h3>
+                <article>In this mode, you will select a player that you think will be the last one standing.</article>
+                <div>
+                    <p class="hover-emoji" data-emoji="rock">🪨</p>
+                    <p class="hover-emoji" data-emoji="paper">📄</p>
+                    <p class="hover-emoji" data-emoji="scissors">✂️</p>
                 </div>
             </div>
         </div>
