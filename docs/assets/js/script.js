@@ -10,6 +10,10 @@ const zenBtnEl = document.getElementById("zen");
 const menuEl = document.getElementById("menu");
 const battleMenuEl = document.getElementById("battle-menu");
 const countdownEl = document.getElementById("countdown");
+const endGameEl = document.getElementById("end-game");
+const winnerEl = document.getElementById("winner");
+const mainMenuBtnEl = document.getElementById("main-menu");
+const resultEl = document.getElementById("result");
 const addEmojiEls = document.getElementsByClassName("emoji");
 const battleMenuEmojiEls = document.getElementsByClassName("hover-emoji");
 let gameMode = "";
@@ -29,6 +33,7 @@ class FloatingElement {
     increments;
     emoji;
     speed;
+    interval;
     constructor(id, emoji, coordinates, increments) {
         this.id = id;
         this.htmlElement = document.createElement("span");
@@ -39,6 +44,7 @@ class FloatingElement {
         this.increments = increments || { x: coinFlip(-1, 1), y: coinFlip(-1, 1) };
         this.emoji = emoji;
         this.speed = 10;
+        this.interval = 0;
     }
     init(isBattle) {
         elementArray.push(this);
@@ -50,7 +56,10 @@ class FloatingElement {
         }
     }
     startMovement() {
-        return setInterval(() => this.movementInterval(), this.speed);
+        this.interval = setInterval(() => this.movementInterval(), this.speed);
+    }
+    stopMovement() {
+        clearInterval(this.interval);
     }
     updateDOM() {
         this.htmlElement.setAttribute("style", `left: ${this.coordinates.x}px; top: ${this.coordinates.y}px`);
@@ -134,6 +143,14 @@ class FloatingElement {
                     }
                     this.moveElement();
                     elementArray[i].moveElement();
+                    if (gameMode === "Battle Mode") {
+                        const emojiArray = elementArray.map(el => el.emoji);
+                        for (let j = 0; j < emojis.length; j++) {
+                            if (arrayValuesAreSame(emojiArray, emojis[j])) {
+                                return endGame(emojis[j]);
+                            }
+                        }
+                    }
                     return;
                 }
             }
@@ -222,6 +239,26 @@ const battleStart = async () => {
     hideShowEl(modalEl, false);
     return elementArray.forEach(el => el.startMovement());
 };
+const arrayValuesAreSame = (array, target) => {
+    return array.every(value => value === target);
+};
+const endGame = (winner) => {
+    for (let i = 0; i < elementArray.length; i++) {
+        elementArray[i].stopMovement();
+    }
+    winnerEl.innerHTML = winner;
+    if (winner === selectedEmoji) {
+        resultEl.style.color = "#4bec4b";
+        resultEl.innerText = "You win!";
+    }
+    else {
+        resultEl.style.color = "#eb4949";
+        resultEl.innerText = "You lose";
+    }
+    hideShowEl(modalEl, true);
+    hideShowEl(modalContentEl, true);
+    hideShowEl(endGameEl, true);
+};
 for (let i = 0; i < addEmojiEls.length; i++) {
     const element = addEmojiEls[i];
     element.addEventListener("click", () => {
@@ -257,6 +294,16 @@ fullScreenEl.addEventListener("click", () => {
 });
 battleBtnEl.addEventListener("click", menuSelect);
 zenBtnEl.addEventListener("click", menuSelect);
+mainMenuBtnEl.addEventListener("click", () => {
+    elementArray.forEach(el => {
+        el.htmlElement.remove();
+    });
+    elementArray = [];
+    gameMode = "";
+    selectedEmoji = "";
+    hideShowEl(endGameEl, false);
+    hideShowEl(menuEl, true);
+});
 toggleColorMode();
 if (!document.fullscreenEnabled) {
     fullScreenEl.style.display = "none";

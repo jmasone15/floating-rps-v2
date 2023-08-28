@@ -19,6 +19,10 @@ const zenBtnEl = document.getElementById("zen") as HTMLElement;
 const menuEl = document.getElementById("menu") as HTMLElement;
 const battleMenuEl = document.getElementById("battle-menu") as HTMLElement;
 const countdownEl = document.getElementById("countdown") as HTMLElement;
+const endGameEl = document.getElementById("end-game") as HTMLElement;
+const winnerEl = document.getElementById("winner") as HTMLSpanElement;
+const mainMenuBtnEl = document.getElementById("main-menu") as HTMLDivElement;
+const resultEl = document.getElementById("result") as HTMLElement;
 const addEmojiEls = document.getElementsByClassName("emoji");
 const battleMenuEmojiEls = document.getElementsByClassName("hover-emoji");
 
@@ -42,6 +46,7 @@ class FloatingElement {
     increments: Coordinates;
     emoji: string;
     speed: number;
+    interval: number;
 
     constructor(id: number, emoji: string, coordinates?: Coordinates, increments?: Coordinates) {
         this.id = id;
@@ -53,6 +58,7 @@ class FloatingElement {
         this.increments = increments || { x: coinFlip(-1, 1), y: coinFlip(-1, 1) };
         this.emoji = emoji;
         this.speed = 10;
+        this.interval = 0;
     }
 
     init(isBattle?: boolean) {
@@ -71,7 +77,11 @@ class FloatingElement {
     }
 
     startMovement() {
-        return setInterval(() => this.movementInterval(), this.speed);
+        this.interval = setInterval(() => this.movementInterval(), this.speed);
+    }
+
+    stopMovement() {
+        clearInterval(this.interval);
     }
 
     updateDOM() {
@@ -177,6 +187,16 @@ class FloatingElement {
                     this.moveElement();
                     elementArray[i].moveElement();
 
+                    if (gameMode === "Battle Mode") {
+                        const emojiArray = elementArray.map(el => el.emoji);
+
+                        for (let j = 0; j < emojis.length; j++) {
+                            if (arrayValuesAreSame<string>(emojiArray, emojis[j])) {
+                                return endGame(emojis[j]);
+                            }
+                        }
+                    }
+
                     return;
                 }
             }
@@ -278,6 +298,28 @@ const battleStart = async () => {
 
     return elementArray.forEach(el => el.startMovement());
 };
+const arrayValuesAreSame = <T>(array: T[], target: T): boolean => {
+    return array.every(value => value === target);
+};
+const endGame = (winner: string) => {
+    for (let i = 0; i < elementArray.length; i++) {
+        elementArray[i].stopMovement();
+    }
+
+    winnerEl.innerHTML = winner;
+
+    if (winner === selectedEmoji) {
+        resultEl.style.color = "#4bec4b";
+        resultEl.innerText = "You win!";
+    } else {
+        resultEl.style.color = "#eb4949";
+        resultEl.innerText = "You lose";
+    }
+
+    hideShowEl(modalEl, true);
+    hideShowEl(modalContentEl, true);
+    hideShowEl(endGameEl, true);
+};
 
 // Event Listeners
 for (let i = 0; i < addEmojiEls.length; i++) {
@@ -316,6 +358,18 @@ fullScreenEl.addEventListener("click", () => {
 });
 battleBtnEl.addEventListener("click", menuSelect);
 zenBtnEl.addEventListener("click", menuSelect);
+mainMenuBtnEl.addEventListener("click", () => {
+    elementArray.forEach(el => {
+        el.htmlElement.remove();
+    });
+
+    elementArray = [];
+    gameMode = "";
+    selectedEmoji = "";
+
+    hideShowEl(endGameEl, false);
+    hideShowEl(menuEl, true);
+});
 
 // Init
 toggleColorMode();
